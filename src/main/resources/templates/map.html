@@ -1,37 +1,42 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Mission Map</title>
+    <title>Operations Map</title>
     <link rel="stylesheet" th:href="@{/style.css}">
 </head>
 <body>
 <div class="app-container">
     <div class="main-content">
         <div class="hud-bar">
-            <div class="hud-item"><span class="coin-icon">💰</span> <span th:text="${state.coins}">0</span></div>
-            <div class="hud-item"><span class="streak-icon">🔥</span> Streak: <span th:text="${state.streak}">0</span></div>
-            <a th:href="@{/}" class="btn" style="padding: 5px 15px;">Dashboard</a>
+            <a th:href="@{/dashboard}" class="btn text-btn" style="font-size: 0.9rem;">← Back to Main Dashboard</a>
+            <div style="display: flex; gap: 20px;">
+                <div class="hud-item">💰 <span th:text="${state.coins}">0</span></div>
+                <div class="hud-item">🔥 Streak: <span th:text="${state.streak}">0</span></div>
+            </div>
         </div>
 
-        <div class="content-area">
-            <h2 style="color: var(--primary); text-align: center;">Sector Map</h2>
+        <div class="content-area" style="text-align: center;">
+            <h1 style="color: var(--text-main); margin-bottom: 10px;">TACTICAL MISSION MAP</h1>
+            <p style="color: var(--text-muted); margin-bottom: 40px;">Select an available sector node to initialize your investigation.</p>
 
-            <div class="map-grid">
-                <a th:each="i : ${#numbers.sequence(1, 10)}"
-                   th:href="@{/challenge/{id}(id=${i})}"
-                   th:class="${i <= state.completedSectors + 1} ? 'map-node unlocked' : 'map-node locked'">
-                    <div style="font-size: 2rem; margin-bottom: 10px;">
-                        <span th:if="${i <= state.completedSectors}">✅</span>
-                        <span th:if="${i == state.completedSectors + 1}">🎯</span>
-                        <span th:if="${i > state.completedSectors + 1}">🔒</span>
+            <div class="classic-map-grid">
+                <div th:each="i : ${#numbers.sequence(1, 10)}" class="map-node-wrapper">
+
+                    <a th:if="${i <= state.completedSectors + 1}"
+                       th:href="@{/challenge/{id}(id=${i})}"
+                       th:classappend="${i == state.completedSectors + 1} ? 'active-pulse' : ''"
+                       class="sector-node unlocked">
+                        <div class="node-number" th:text="${i}">1</div>
+                        <div class="node-status">AVAILABLE</div>
+                    </a>
+
+                    <div th:unless="${i <= state.completedSectors + 1}" class="sector-node locked">
+                        <div class="node-number">🔒</div>
+                        <div class="node-status" style="color: var(--text-muted);">LOCKED</div>
                     </div>
-                    <h3 th:text="'Sector ' + ${i}"></h3>
-                    <p th:if="${i > state.completedSectors + 1}" style="font-size: 0.8rem; margin-top: 10px;">Locked</p>
-                </a>
-            </div>
 
-            <div style="text-align: center; margin-top: 30px;" th:if="${state.completedSectors == 10}">
-                <a th:href="@{/result}" class="btn" style="background: var(--success);">View Final Report</a>
+                    <div class="node-label" th:text="'SECTOR 0' + ${i}">SECTOR 01</div>
+                </div>
             </div>
         </div>
     </div>

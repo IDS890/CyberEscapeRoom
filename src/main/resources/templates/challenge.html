@@ -1,59 +1,66 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title th:text="${challenge.title}">Investigation</title>
+    <title th:text="${challenge.title}">Investigation Panel</title>
     <link rel="stylesheet" th:href="@{/style.css}">
 </head>
 <body>
 <div class="app-container">
     <div class="main-content">
         <div class="hud-bar">
-            <div class="hud-item"><span class="coin-icon">💰</span> <span th:text="${state.coins}">0</span></div>
-            <div class="hud-item"><span class="streak-icon">🔥</span> Streak: <span th:text="${state.streak}">0</span></div>
-            <div class="hud-item">Sector: <span th:text="${challenge.id}"></span>/10</div>
+            <div class="hud-item">Sector Node: <span th:text="${challenge.id}"></span>/10</div>
+            <div style="display: flex; gap: 20px;">
+                <div class="hud-item">💰 <span th:text="${state.coins}">0</span></div>
+                <div class="hud-item">🔥 Streak: <span th:text="${state.streak}">0</span></div>
+            </div>
         </div>
 
-        <div class="content-area">
-            <h2 style="color: var(--primary); margin-bottom: 20px;" th:text="${challenge.title}">Title</h2>
+        <div class="challenge-workspace">
 
-            <div class="investigation-grid">
-                <div class="evidence-panel">
-                    <h3 style="color: var(--warning); border-bottom: 1px solid var(--border); padding-bottom: 10px;">MISSION BRIEFING</h3>
-                    <p style="margin: 15px 0;" th:text="${challenge.missionBriefing}"></p>
+            <div class="workspace-left">
+                <div class="card scenario-card">
+                    <div class="card-header-line">SCENARIO ANALYSIS</div>
+                    <h2 style="color: var(--primary); margin-bottom: 15px;" th:text="${challenge.title}">Challenge Title</h2>
+                    <p style="line-height: 1.6; margin-bottom: 25px; color: var(--text-main);" th:text="${challenge.missionBriefing}"></p>
 
-                    <h3 style="color: var(--primary); margin-top: 30px;">EXHIBIT A: Evidence</h3>
+                    <div class="card-header-line">EXHIBIT EVIDENCE</div>
                     <div th:utext="${challenge.evidenceHtml}"></div>
                 </div>
-
-                <div>
-                    <form th:action="@{/submit/{id}(id=${challenge.id})}" method="post">
-
-                        <h3 style="margin-bottom: 15px;">Investigation Tasks</h3>
-
-                        <div class="task-card" th:each="task : ${challenge.tasks}">
-                            <strong th:text="${task.question}"></strong>
-                            <select class="cyber-select" th:name="${task.id}" required>
-                                <option value="" disabled selected>-- Select Analysis --</option>
-                                <option th:each="opt : ${task.options}" th:value="${opt.key}" th:text="${opt.value}"></option>
-                            </select>
-                        </div>
-
-                        <div class="final-decision-card">
-                            <h3 style="color: var(--danger); margin-bottom: 10px;">FINAL DECISION</h3>
-                            <strong th:text="${challenge.finalDecision.question}"></strong>
-
-                            <div style="display: flex; gap: 10px; justify-content: center; margin-top: 15px;">
-                                <label class="selectable-card" th:each="opt : ${challenge.finalDecision.options}" style="flex: 1;">
-                                    <input type="radio" name="final" th:value="${opt.key}" required>
-                                    <span th:text="${opt.value}"></span>
-                                </label>
-                            </div>
-                        </div>
-
-                        <button type="submit" class="btn" style="width: 100%; margin-top: 20px; font-size: 1.2rem;">Submit Investigation Report</button>
-                    </form>
-                </div>
             </div>
+
+            <div class="workspace-right">
+                <form th:action="@{/submit/{id}(id=${challenge.id})}" method="post">
+
+                    <div class="card task-investigation-card" th:each="task : ${challenge.tasks}">
+                        <div class="task-query" th:text="${task.question}">Task Question Goes Here</div>
+
+                        <div class="options-list">
+                            <label class="custom-option-row" th:each="opt : ${task.options}">
+                                <input type="radio" th:name="${task.id}" th:value="${opt.key}" required>
+                                <span class="radio-checkmark"></span>
+                                <span class="option-text" th:text="${opt.value}">Option Variant</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="card ultimate-decision-card">
+                        <div class="decision-alert-banner">CRITICAL ACTION REQUIRED</div>
+                        <div class="task-query" style="text-align: center; margin-bottom: 20px;" th:text="${challenge.finalDecision.question}">Final Query</div>
+
+                        <div class="decision-options-flex">
+                            <label class="decision-btn-label" th:each="opt : ${challenge.finalDecision.options}">
+                                <input type="radio" name="final" th:value="${opt.key}" required>
+                                <div class="decision-inner-box">
+                                    <span th:text="${opt.value}">Decision Option</span>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn file-report-btn">Transmit Forensic Report ⚡</button>
+                </form>
+            </div>
+
         </div>
     </div>
 </div>

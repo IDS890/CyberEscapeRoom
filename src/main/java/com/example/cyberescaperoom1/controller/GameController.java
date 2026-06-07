@@ -159,33 +159,59 @@ public class GameController {
         Challenge challenge = challenges.get(id);
 
         int tasksCorrect = 0;
-        List<String> feedback = new ArrayList<>();
+        List<Map<String, Object>> detailedFeedback = new ArrayList<>();
 
+        // 1. Evaluate standard investigation tasks
         for (InvestigationTask task : challenge.getTasks()) {
             String submittedAnswer = allParams.get(task.getId());
-            if (task.getCorrectAnswer().equals(submittedAnswer)) {
+            boolean isCorrect = task.getCorrectAnswer().equals(submittedAnswer);
+
+            if (isCorrect) {
                 tasksCorrect++;
-                feedback.add("✅ " + task.getQuestion() + " (Correct)");
-            } else {
-                feedback.add("❌ " + task.getQuestion() + " (Incorrect)");
             }
+
+            Map<String, Object> reportItem = new HashMap<>();
+            reportItem.put("question", task.getQuestion());
+            reportItem.put("isCorrect", isCorrect);
+            reportItem.put("userAnswer", task.getOptions().getOrDefault(submittedAnswer, "No selection"));
+            reportItem.put("correctAnswer", task.getOptions().get(task.getCorrectAnswer()));
+            detailedFeedback.add(reportItem);
         }
 
+        // 2. Evaluate Final Decision
         String finalAnswer = allParams.get("final");
         boolean finalDecisionCorrect = challenge.getFinalDecision().getCorrectAnswer().equals(finalAnswer);
 
+        Map<String, Object> finalReportItem = new HashMap<>();
+        finalReportItem.put("question", "CRITICAL CALL: " + challenge.getFinalDecision().getQuestion());
+        finalReportItem.put("isCorrect", finalDecisionCorrect);
+        finalReportItem.put("userAnswer", challenge.getFinalDecision().getOptions().getOrDefault(finalAnswer, "No selection"));
+        finalReportItem.put("correctAnswer", challenge.getFinalDecision().getOptions().get(challenge.getFinalDecision().getCorrectAnswer()));
+        detailedFeedback.add(finalReportItem);
+
+        // 3. Calculate round-specific rewards matching GameState.java logic
+        int coinsEarned = (tasksCorrect * 10);
+        int xpEarned = (tasksCorrect * 25);
         if (finalDecisionCorrect) {
-            feedback.add("✅ FINAL DECISION: Correct Call.");
-        } else {
-            feedback.add("❌ FINAL DECISION: Incorrect Call. The network remains at risk.");
+            coinsEarned += 20;
+            xpEarned += 50;
         }
 
+        boolean perfectScore = (tasksCorrect == challenge.getTasks().size() && finalDecisionCorrect);
+        if (perfectScore) {
+            coinsEarned += 30; // Perfect run bonus
+        }
+
+        // 4. Update core game state
         state.addInvestigationScore(id, tasksCorrect, challenge.getTasks().size(), finalDecisionCorrect);
 
+        // 5. Pack variables for Thymeleaf layout view
         model.addAttribute("state", state);
         model.addAttribute("challenge", challenge);
-        model.addAttribute("feedbackLogs", feedback);
-        model.addAttribute("perfectScore", (tasksCorrect == challenge.getTasks().size() && finalDecisionCorrect));
+        model.addAttribute("reports", detailedFeedback);
+        model.addAttribute("perfectScore", perfectScore);
+        model.addAttribute("coinsEarned", coinsEarned);
+        model.addAttribute("xpEarned", xpEarned);
         model.addAttribute("nextSector", id < 10 ? id + 1 : -1);
 
         return "feedback";

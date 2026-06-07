@@ -1,37 +1,62 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Debriefing</title>
+    <title>Incident Debriefing Report</title>
     <link rel="stylesheet" th:href="@{/style.css}">
 </head>
 <body>
 <div class="app-container">
     <div class="main-content">
-        <div class="content-area" style="display: flex; justify-content: center; align-items: center; height: 100%;">
-            <div class="card" style="width: 100%; max-width: 700px;">
+        <div class="feedback-layout animate-fade-in-up">
 
-                <div style="text-align: center; margin-bottom: 20px;">
-                    <h1 th:if="${perfectScore}" style="color: var(--success);">🏆 Perfect Investigation</h1>
-                    <h1 th:unless="${perfectScore}" style="color: var(--warning);">⚠️ Partial Completion</h1>
+            <div class="report-header" th:classappend="${perfectScore} ? 'success-banner' : 'warning-banner'">
+                <h1 th:text="${perfectScore} ? '⚡ FORENSIC ANALYSIS COMPLETED: PERFECT RUN' : '⚠️ FORENSIC ANALYSIS COMPLETED: PARTIAL BREAKDOWN'">Report Status</h1>
+                <p style="opacity: 0.8; font-family: monospace; margin-top: 5px;">LOG_ID: SEC-00<span th:text="${challenge.id}"></span> // DEBRIEF_SECURE</p>
+            </div>
+
+            <div class="earnings-summary-grid">
+                <div class="earning-card token-glow">
+                    <div class="earning-label">BOUNTY COINS UNLOCKED</div>
+                    <div class="earning-value" th:text="'+' + ${coinsEarned} + ' 💰'">+0 💰</div>
                 </div>
-
-                <div class="evidence-panel" style="background: transparent; margin-bottom: 20px;">
-                    <h3>Task Accuracy Breakdown:</h3>
-                    <ul style="list-style: none; margin-top: 15px; font-family: monospace; font-size: 1.1rem; line-height: 1.8;">
-                        <li th:each="log : ${feedbackLogs}" th:text="${log}"></li>
-                    </ul>
-                </div>
-
-                <div style="background: rgba(0,0,0,0.3); padding: 15px; border-left: 4px solid var(--primary); margin-bottom: 30px;">
-                    <strong>COMMAND DEBRIEFING:</strong>
-                    <p th:text="${challenge.debriefing}" style="margin-top: 10px; font-size: 1.1rem;"></p>
-                </div>
-
-                <div style="text-align: center;">
-                    <a th:if="${nextSector != -1}" th:href="@{/map}" class="btn">Return to Map</a>
-                    <a th:if="${nextSector == -1}" th:href="@{/result}" class="btn" style="background: var(--success);">View Final Report</a>
+                <div class="earning-card xp-glow">
+                    <div class="earning-label">EXPERIENCE POINTS ACQUIRED</div>
+                    <div class="earning-value" th:text="'+' + ${xpEarned} + ' XP'">+0 XP</div>
                 </div>
             </div>
+
+            <h3 style="margin: 30px 0 15px 0; color: var(--text-main); font-family: monospace;">> INDIVIDUAL ITEM ANALYSIS:</h3>
+            <div class="report-timeline">
+
+                <div th:each="item : ${reports}" class="analysis-row-card" th:classappend="${item.isCorrect} ? 'row-correct' : 'row-incorrect'">
+                    <div class="row-status-indicator" th:text="${item.isCorrect} ? '✔' : '✘'">✔</div>
+
+                    <div class="row-content-body">
+                        <h4 class="analysis-question" th:text="${item.question}">Task Query Descriptor</h4>
+
+                        <div class="audit-trail-flex">
+                            <div>Your Assessment: <span class="badge-evaluated" th:text="${item.userAnswer}">Selected Option</span></div>
+                            <div th:if="${!item.isCorrect}">Expected Metric: <span class="badge-expected" th:text="${item.correctAnswer}">Correct Answer</span></div>
+                        </div>
+
+                        <div th:if="${!item.isCorrect}" class="remediation-box">
+                            <strong>💡 DEFENDER INTEL BRIEF:</strong> You marked this indicator incorrectly. In a live environment, missing this detail could allow the adversary to bypass host controls or hide execution commands. Review the evidence timeline to cross-reference lookalikes or timestamps.
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="card structural-debrief-card">
+                <div class="card-header-line">COMMANDER NOTES & LEARNING CONCEPT</div>
+                <p style="line-height: 1.7; color: var(--text-main);" th:text="${challenge.debriefing}">Global debrief description content text.</p>
+            </div>
+
+            <div style="text-align: center; margin-top: 40px;">
+                <a th:if="${nextSector != -1}" th:href="@{/map}" class="btn action-forward-btn">Return to Tactical Map Node</a>
+                <a th:if="${nextSector == -1}" th:href="@{/result}" class="btn action-forward-btn" style="background: linear-gradient(135deg, #7c3aed, #6d28d9);">Generate Final Operations Dossier 📋</a>
+            </div>
+
         </div>
     </div>
 </div>
