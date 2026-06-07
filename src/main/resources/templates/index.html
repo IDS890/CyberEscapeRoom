@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="">
+<head>
+    <title>Command Center</title>
+    <link rel="stylesheet" th:href="@{/style.css}">
+</head>
+<body>
+<div class="app-container">
+    <div class="main-content">
+        <div class="hud-bar">
+            <div class="hud-item"><span class="coin-icon">💰</span> <span th:text="${state.coins}">0</span> Coins</div>
+            <div class="hud-item"><span class="streak-icon">🔥</span> Streak: <span th:text="${state.streak}">0</span></div>
+            <div class="hud-item" style="color: var(--primary);">Level: <span th:text="${state.level}">Trainee</span></div>
+        </div>
+
+        <div class="content-area">
+            <h1 style="color: var(--primary); margin-bottom: 30px;">Cyber Operations Dashboard</h1>
+
+            <div class="grid-container">
+                <div class="card">
+                    <div class="card-header">Operative Status</div>
+                    <p><strong>Rank:</strong> <span th:text="${state.level}"></span></p>
+                    <p><strong>Total XP:</strong> <span th:text="${state.xp}"></span> XP</p>
+                    <div class="xp-container">
+                        <div class="xp-fill" th:style="'width: ' + ${state.levelProgress} + '%'"></div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">Mission Progress</div>
+                    <div class="stat-value" th:text="${state.completedSectors} + ' / 10'"></div>
+                    <p style="color: var(--text-muted);">Sectors Secured</p>
+                </div>
+            </div>
+
+            <div class="card" style="text-align: center;">
+                <h2>Deploy to Active Mission</h2>
+                <p style="margin: 20px 0;">The network is under attack. Proceed to the Mission Map to select your sector.</p>
+                <a th:href="@{/map}" class="btn">View Mission Map</a>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

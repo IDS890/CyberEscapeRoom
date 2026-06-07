@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Mission Map</title>
+    <link rel="stylesheet" th:href="@{/style.css}">
+</head>
+<body>
+<div class="app-container">
+    <div class="main-content">
+        <div class="hud-bar">
+            <div class="hud-item"><span class="coin-icon">💰</span> <span th:text="${state.coins}">0</span></div>
+            <div class="hud-item"><span class="streak-icon">🔥</span> Streak: <span th:text="${state.streak}">0</span></div>
+            <a th:href="@{/}" class="btn" style="padding: 5px 15px;">Dashboard</a>
+        </div>
+
+        <div class="content-area">
+            <h2 style="color: var(--primary); text-align: center;">Sector Map</h2>
+
+            <div class="map-grid">
+                <a th:each="i : ${#numbers.sequence(1, 10)}"
+                   th:href="@{/challenge/{id}(id=${i})}"
+                   th:class="${i <= state.completedSectors + 1} ? 'map-node unlocked' : 'map-node locked'">
+                    <div style="font-size: 2rem; margin-bottom: 10px;">
+                        <span th:if="${i <= state.completedSectors}">✅</span>
+                        <span th:if="${i == state.completedSectors + 1}">🎯</span>
+                        <span th:if="${i > state.completedSectors + 1}">🔒</span>
+                    </div>
+                    <h3 th:text="'Sector ' + ${i}"></h3>
+                    <p th:if="${i > state.completedSectors + 1}" style="font-size: 0.8rem; margin-top: 10px;">Locked</p>
+                </a>
+            </div>
+
+            <div style="text-align: center; margin-top: 30px;" th:if="${state.completedSectors == 10}">
+                <a th:href="@{/result}" class="btn" style="background: var(--success);">View Final Report</a>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

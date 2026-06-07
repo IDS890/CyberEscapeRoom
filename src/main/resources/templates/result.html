@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Final Report</title>
+    <link rel="stylesheet" th:href="@{/style.css}">
+</head>
+<body>
+<div class="app-container">
+    <div class="main-content">
+        <div class="content-area">
+            <div class="card" style="text-align: center;">
+                <h1 style="color: var(--primary);">Simulation Complete</h1>
+
+                <div style="display: flex; justify-content: space-around; margin: 40px 0;">
+                    <div>
+                        <h2 th:text="${state.xp}"></h2>
+                        <p>Total XP</p>
+                    </div>
+                    <div>
+                        <h2 style="color: gold;" th:text="${state.coins}"></h2>
+                        <p>Total Coins</p>
+                    </div>
+                    <div>
+                        <h2 style="color: var(--success);" th:text="${state.level}"></h2>
+                        <p>Final Rank</p>
+                    </div>
+                </div>
+
+                <h3>Earned Achievements</h3>
+                <div style="margin: 20px 0;">
+                    <span th:each="achievement : ${state.achievements}" class="achievement-badge" th:text="${achievement}"></span>
+                </div>
+
+                <form th:action="@{/reset}" method="post" style="margin-top: 40px;">
+                    <button type="submit" class="btn" style="background: var(--danger);">Reset Simulation</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

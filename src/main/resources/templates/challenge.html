@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="">
+<head>
+    <title th:text="${challenge.title}">Investigation</title>
+    <link rel="stylesheet" th:href="@{/style.css}">
+</head>
+<body>
+<div class="app-container">
+    <div class="main-content">
+        <div class="hud-bar">
+            <div class="hud-item"><span class="coin-icon">💰</span> <span th:text="${state.coins}">0</span></div>
+            <div class="hud-item"><span class="streak-icon">🔥</span> Streak: <span th:text="${state.streak}">0</span></div>
+            <div class="hud-item">Sector: <span th:text="${challenge.id}"></span>/10</div>
+        </div>
+
+        <div class="content-area">
+            <h2 style="color: var(--primary); margin-bottom: 20px;" th:text="${challenge.title}">Title</h2>
+
+            <div class="investigation-grid">
+                <div class="evidence-panel">
+                    <h3 style="color: var(--warning); border-bottom: 1px solid var(--border); padding-bottom: 10px;">MISSION BRIEFING</h3>
+                    <p style="margin: 15px 0;" th:text="${challenge.missionBriefing}"></p>
+
+                    <h3 style="color: var(--primary); margin-top: 30px;">EXHIBIT A: Evidence</h3>
+                    <div th:utext="${challenge.evidenceHtml}"></div>
+                </div>
+
+                <div>
+                    <form th:action="@{/submit/{id}(id=${challenge.id})}" method="post">
+
+                        <h3 style="margin-bottom: 15px;">Investigation Tasks</h3>
+
+                        <div class="task-card" th:each="task : ${challenge.tasks}">
+                            <strong th:text="${task.question}"></strong>
+                            <select class="cyber-select" th:name="${task.id}" required>
+                                <option value="" disabled selected>-- Select Analysis --</option>
+                                <option th:each="opt : ${task.options}" th:value="${opt.key}" th:text="${opt.value}"></option>
+                            </select>
+                        </div>
+
+                        <div class="final-decision-card">
+                            <h3 style="color: var(--danger); margin-bottom: 10px;">FINAL DECISION</h3>
+                            <strong th:text="${challenge.finalDecision.question}"></strong>
+
+                            <div style="display: flex; gap: 10px; justify-content: center; margin-top: 15px;">
+                                <label class="selectable-card" th:each="opt : ${challenge.finalDecision.options}" style="flex: 1;">
+                                    <input type="radio" name="final" th:value="${opt.key}" required>
+                                    <span th:text="${opt.value}"></span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn" style="width: 100%; margin-top: 20px; font-size: 1.2rem;">Submit Investigation Report</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

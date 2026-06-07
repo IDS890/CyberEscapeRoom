@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="">
+<head>
+    <title>Debriefing</title>
+    <link rel="stylesheet" th:href="@{/style.css}">
+</head>
+<body>
+<div class="app-container">
+    <div class="main-content">
+        <div class="content-area" style="display: flex; justify-content: center; align-items: center; height: 100%;">
+            <div class="card" style="width: 100%; max-width: 700px;">
+
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <h1 th:if="${perfectScore}" style="color: var(--success);">🏆 Perfect Investigation</h1>
+                    <h1 th:unless="${perfectScore}" style="color: var(--warning);">⚠️ Partial Completion</h1>
+                </div>
+
+                <div class="evidence-panel" style="background: transparent; margin-bottom: 20px;">
+                    <h3>Task Accuracy Breakdown:</h3>
+                    <ul style="list-style: none; margin-top: 15px; font-family: monospace; font-size: 1.1rem; line-height: 1.8;">
+                        <li th:each="log : ${feedbackLogs}" th:text="${log}"></li>
+                    </ul>
+                </div>
+
+                <div style="background: rgba(0,0,0,0.3); padding: 15px; border-left: 4px solid var(--primary); margin-bottom: 30px;">
+                    <strong>COMMAND DEBRIEFING:</strong>
+                    <p th:text="${challenge.debriefing}" style="margin-top: 10px; font-size: 1.1rem;"></p>
+                </div>
+
+                <div style="text-align: center;">
+                    <a th:if="${nextSector != -1}" th:href="@{/map}" class="btn">Return to Map</a>
+                    <a th:if="${nextSector == -1}" th:href="@{/result}" class="btn" style="background: var(--success);">View Final Report</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
