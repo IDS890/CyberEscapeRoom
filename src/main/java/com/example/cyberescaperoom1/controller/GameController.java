@@ -80,7 +80,7 @@ public class GameController {
                 "Always verify the root domain. 'secure-login.info' is the actual domain in URL C, not office.com."
         ));
 
-        // Challenges 6-10 (Structured identically for brevity in code, expanding on the same concepts)
+        // Challenges 6-10
         challenges.put(6, new Challenge(6, "Social Engineering Case", "A caller claims to be IT support.", "<div class='evidence-box'>Caller: 'Hi, I need your password to fix the server.'</div>", Collections.singletonList(new InvestigationTask("task1", "Identify the red flag:", Map.of("a", "Asking for password", "b", "Calling by phone"), "a")), new InvestigationTask("final", "Grant access?", Map.of("yes", "Yes", "no", "No"), "no"), "IT will never ask for your password."));
         challenges.put(7, new Challenge(7, "Malware Identification", "Security software detected unusual activity.", "<div class='evidence-box'>Process: svch0st.exe (Running from C:/Temp)</div>", Collections.singletonList(new InvestigationTask("task1", "What is suspicious?", Map.of("a", "Running from Temp", "b", "It is an exe"), "a")), new InvestigationTask("final", "Action?", Map.of("kill", "Kill Process", "ignore", "Ignore"), "kill"), "Legitimate system processes do not run from Temp folders."));
         challenges.put(8, new Challenge(8, "Security Awareness", "Review employee behavior.", "<div class='evidence-box'>Employee left PC unlocked and wrote password on sticky note.</div>", Collections.singletonList(new InvestigationTask("task1", "Identify unsafe action:", Map.of("a", "Sticky note", "b", "Taking a break"), "a")), new InvestigationTask("final", "Security risk level?", Map.of("high", "High", "low", "Low"), "high"), "Physical security is just as important as digital security."));
@@ -97,6 +97,53 @@ public class GameController {
         return state;
     }
 
+    // --- GATEKEEPER / WELCOME ROUTING ---
+    @GetMapping("/")
+    public String home(HttpSession session) {
+        GameState state = getOrCreateState(session);
+        if (state.getPlayerName() == null || state.getPlayerName().trim().isEmpty()) {
+            return "welcome";
+        }
+        return "redirect:/dashboard";
+    }
+
+    @PostMapping("/join")
+    public String join(@RequestParam("playerName") String playerName, HttpSession session) {
+        GameState state = getOrCreateState(session);
+        state.setPlayerName(playerName);
+        return "redirect:/dashboard";
+    }
+
+    @GetMapping("/dashboard")
+    public String dashboard(HttpSession session, Model model) {
+        GameState state = getOrCreateState(session);
+        if (state.getPlayerName() == null) {
+            return "redirect:/";
+        }
+        model.addAttribute("state", state);
+        return "index";
+    }
+
+    // --- MAP & RESULTS ---
+    @GetMapping("/map")
+    public String map(HttpSession session, Model model) {
+        model.addAttribute("state", getOrCreateState(session));
+        return "map";
+    }
+
+    @GetMapping("/result")
+    public String result(HttpSession session, Model model) {
+        model.addAttribute("state", getOrCreateState(session));
+        return "result";
+    }
+
+    @PostMapping("/reset")
+    public String reset(HttpSession session) {
+        session.invalidate();
+        return "redirect:/";
+    }
+
+    // --- INTERACTIVE CORE GAMEPLAY ---
     @GetMapping("/challenge/{id}")
     public String challenge(@PathVariable int id, HttpSession session, Model model) {
         GameState state = getOrCreateState(session);
@@ -114,7 +161,6 @@ public class GameController {
         int tasksCorrect = 0;
         List<String> feedback = new ArrayList<>();
 
-        // Grade standard tasks
         for (InvestigationTask task : challenge.getTasks()) {
             String submittedAnswer = allParams.get(task.getId());
             if (task.getCorrectAnswer().equals(submittedAnswer)) {
@@ -125,7 +171,6 @@ public class GameController {
             }
         }
 
-        // Grade Final Decision
         String finalAnswer = allParams.get("final");
         boolean finalDecisionCorrect = challenge.getFinalDecision().getCorrectAnswer().equals(finalAnswer);
 
@@ -135,7 +180,6 @@ public class GameController {
             feedback.add("❌ FINAL DECISION: Incorrect Call. The network remains at risk.");
         }
 
-        // Update State
         state.addInvestigationScore(id, tasksCorrect, challenge.getTasks().size(), finalDecisionCorrect);
 
         model.addAttribute("state", state);
@@ -145,31 +189,5 @@ public class GameController {
         model.addAttribute("nextSector", id < 10 ? id + 1 : -1);
 
         return "feedback";
-
-    }
-    // --- ADD THESE MISSING ROUTES BACK IN --- //
-
-    @GetMapping("/")
-    public String dashboard(HttpSession session, Model model) {
-        model.addAttribute("state", getOrCreateState(session));
-        return "index";
-    }
-
-    @GetMapping("/map")
-    public String map(HttpSession session, Model model) {
-        model.addAttribute("state", getOrCreateState(session));
-        return "map";
-    }
-
-    @GetMapping("/result")
-    public String result(HttpSession session, Model model) {
-        model.addAttribute("state", getOrCreateState(session));
-        return "result";
-    }
-
-    @PostMapping("/reset")
-    public String reset(HttpSession session) {
-        session.invalidate(); // Clears the current session
-        return "redirect:/";  // Restarts the game
     }
 }

@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Initiate Connection</title>
+    <link rel="stylesheet" th:href="@{/style.css}">
+</head>
+<body class="welcome-body">
+<div class="welcome-container animate-fade-in-up">
+    <div class="cyber-glitch-logo">SOC_TERMINAL</div>
+    <h2 style="color: var(--text-main); margin-bottom: 20px;">Secure Connection Established.</h2>
+    <p style="color: var(--text-muted); margin-bottom: 30px;">Identify yourself to access the cyber operations' dashboard.</p>
+
+    <form th:action="@{/join}" method="post">
+        <input type="text" name="playerName" class="cyber-input" placeholder="Enter your Hacker Handle..." required autocomplete="off">
+        <button type="submit" class="btn cyber-btn-primary" style="width: 100%; margin-top: 20px;">Initialize Session</button>
+    </form>
+</div>
+</body>
+</html>

@@ -25,6 +25,12 @@ public class GameState {
         // Simple progress calculation (resets every 50 XP)
         return (xp % 50) * 2; // 2% per 1 XP
     }
+    // Inside your GameState class, add this at the top with your other variables:
+    private String playerName;
+
+    // Add these getters and setters at the bottom of the class:
+    public String getPlayerName() { return playerName; }
+    public void setPlayerName(String playerName) { this.playerName = playerName; }
 
     public void addCorrectAnswer(int sector) {
         coins += 10;

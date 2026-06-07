@@ -1,42 +1,66 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Command Center</title>
+    <title>Cyber Operations Dashboard</title>
     <link rel="stylesheet" th:href="@{/style.css}">
 </head>
 <body>
 <div class="app-container">
     <div class="main-content">
-        <div class="hud-bar">
-            <div class="hud-item"><span class="coin-icon">💰</span> <span th:text="${state.coins}">0</span> Coins</div>
-            <div class="hud-item"><span class="streak-icon">🔥</span> Streak: <span th:text="${state.streak}">0</span></div>
-            <div class="hud-item" style="color: var(--primary);">Level: <span th:text="${state.level}">Trainee</span></div>
+        <div class="hud-bar animate-fade-in">
+            <div class="hud-item"><span style="color: var(--primary);">Terminal:</span> Active</div>
+            <div style="display: flex; gap: 20px;">
+                <div class="hud-item"><span class="coin-icon">💰</span> <span th:text="${state.coins}">0</span></div>
+                <div class="hud-item"><span class="streak-icon">🔥</span> Streak: <span th:text="${state.streak}">0</span></div>
+            </div>
         </div>
 
         <div class="content-area">
-            <h1 style="color: var(--primary); margin-bottom: 30px;">Cyber Operations Dashboard</h1>
+            <div class="dashboard-header animate-fade-in-up">
+                <h1 style="color: var(--text-main);">Welcome back, <span style="color: var(--primary);" th:text="${state.playerName}">Operative</span>.</h1>
+                <p style="color: var(--text-muted);">Your daily threat intelligence briefing is ready.</p>
+            </div>
 
-            <div class="grid-container">
-                <div class="card">
-                    <div class="card-header">Operative Status</div>
-                    <p><strong>Rank:</strong> <span th:text="${state.level}"></span></p>
-                    <p><strong>Total XP:</strong> <span th:text="${state.xp}"></span> XP</p>
-                    <div class="xp-container">
-                        <div class="xp-fill" th:style="'width: ' + ${state.levelProgress} + '%'"></div>
+            <div class="thm-grid">
+                <div class="thm-left-col animate-slide-right">
+                    <div class="card thm-card">
+                        <h3 class="card-title">Operative Rank</h3>
+                        <div class="rank-badge" th:text="${state.level}">Cyber Trainee</div>
+                        <div class="stat-row">
+                            <span>Total Experience:</span>
+                            <span style="color: var(--primary); font-weight: bold;" th:text="${state.xp} + ' XP'"></span>
+                        </div>
+                        <div class="xp-container">
+                            <div class="xp-fill glow-bar" th:style="'width: ' + ${state.levelProgress} + '%'"></div>
+                        </div>
+                    </div>
+
+                    <div class="card thm-card">
+                        <h3 class="card-title">Simulation Progress</h3>
+                        <div class="progress-circle-container">
+                            <div class="stat-value pulse-text" th:text="${state.completedSectors} + ' / 10'"></div>
+                            <p style="color: var(--text-muted);">Sectors Secured</p>
+                        </div>
                     </div>
                 </div>
 
-                <div class="card">
-                    <div class="card-header">Mission Progress</div>
-                    <div class="stat-value" th:text="${state.completedSectors} + ' / 10'"></div>
-                    <p style="color: var(--text-muted);">Sectors Secured</p>
-                </div>
-            </div>
+                <div class="thm-right-col animate-slide-left">
+                    <div class="card thm-card main-mission-card">
+                        <div class="mission-status-indicator"></div>
+                        <h2 style="color: var(--text-main); margin-bottom: 10px;">Active Deployment</h2>
+                        <p style="color: var(--text-muted); margin-bottom: 30px; line-height: 1.6;">
+                            The network is under active attack. A threat actor has breached the perimeter and is moving laterally. We need you to investigate the initial vector, analyze the logs, and isolate the infection before ransomware is deployed.
+                        </p>
 
-            <div class="card" style="text-align: center;">
-                <h2>Deploy to Active Mission</h2>
-                <p style="margin: 20px 0;">The network is under attack. Proceed to the Mission Map to select your sector.</p>
-                <a th:href="@{/map}" class="btn">View Mission Map</a>
+                        <div style="background: rgba(0,0,0,0.5); padding: 15px; border-radius: 8px; margin-bottom: 30px; font-family: monospace; color: var(--success);">
+                            > SYSTEM STATUS: CRITICAL<br>
+                            > CURRENT OBJECTIVE: Investigate Sector <span th:text="${state.completedSectors + 1}"></span><br>
+                            > AWAITING OPERATIVE INPUT...
+                        </div>
+
+                        <a th:href="@{/map}" class="btn cyber-btn-primary" style="display: inline-block; width: 100%; text-align: center; font-size: 1.2rem; padding: 15px;">Deploy to Mission Map 🚀</a>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
